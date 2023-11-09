@@ -39,24 +39,54 @@ const User = require('../models/users');
 // module.exports.actionName = function(req, res){}
 
 module.exports.home = async (req, res) => {
-    try {
-        const posts = await Post.find({}).populate('user')
-            .populate({
-                path: 'comments',
-                populate: {
-                    path: 'user'
-                }
-            });
+    // try {
+    //     const posts = await Post.find({}).populate('user')
+    //         .populate({
+    //             path: 'comments',
+    //             populate: {
+    //                 path: 'user'
+    //             }
+    //         });
         
-        const users = await User.find({});
+    //     const users = await User.find({});
+
+    //     return res.render('home', {
+    //         title: "Codeial | Home",
+    //         posts: posts,
+    //         all_users: users
+    //     });
+    // } catch (error) {
+    //     console.error('Error fetching posts:', error);
+    //     return res.redirect('back');
+    // }
+
+    try{
+        // CHANGE :: populate the likes of each post and comment
+        let posts = await Post.find({})
+        .sort('-createdAt')
+        .populate('user')
+        .populate({
+            path: 'comments',
+            populate: {
+                path: 'user'
+            },
+            populate: {
+                path: 'likes'
+            }
+        }).populate('comments')
+        .populate('likes');
+
+    
+        let users = await User.find({});
 
         return res.render('home', {
             title: "Codeial | Home",
-            posts: posts,
+            posts:  posts,
             all_users: users
         });
-    } catch (error) {
-        console.error('Error fetching posts:', error);
-        return res.redirect('back');
+
+    }catch(err){
+        console.log('Error', err);
+        return;
     }
 };

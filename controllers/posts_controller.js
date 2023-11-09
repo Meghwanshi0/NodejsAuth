@@ -1,60 +1,6 @@
 const Post = require('../models/post');
 const Comment = require('../models/comment');
-
-// module.exports.create = function(req, res){
-//     Post.create({
-//         content: req.body.content,
-//         user: req.user._id
-//     })
-//     .then(post => {
-//         return res.redirect('back');
-//     })
-//     .catch(err => {
-//         console.log('error in creating a post', err);
-//         return res.redirect('back');
-//     });
-// }
-
-
-
-
-// module.exports.destroy = function(req, res){
-//     Post.findById(req.params.id)
-//         .then(post => {
-//             if (post.user.toString() === req.user.id) {
-//                 return Post.deleteOne({_id: req.params.id});
-//             } else {
-//                 return res.redirect('back');
-//             }
-//         })
-//         .then(() => {
-//             Comment.deleteMany({post: req.params.id})
-//                 .then(() => {
-//                     return res.redirect('back');
-//                 });
-//         })
-//         .catch(err => {
-//             console.log('Error in deleting post:', err);
-//             return res.redirect('back');
-//         });
-// }
-
-// module.exports.create = async function(req, res){
-//     try{
-//         await Post.create({
-//             content: req.body.content,
-//             user: req.user._id
-//         });
-        
-//         req.flash('success', 'Post published!');
-//         return res.redirect('back');
-
-//     }catch(err){
-//         req.flash('error', err);
-//         return res.redirect('back');
-//     }
-  
-// }
+const Like = require('../models/like');
 
 module.exports.create = async function(req, res){
     try{
@@ -62,11 +8,13 @@ module.exports.create = async function(req, res){
             content: req.body.content,
             user: req.user._id
         });
-
-        
         
         if (req.xhr){
-            return res.status(200).json({
+            // if we want to populate just the name of the user (we'll not want to send the password in the API), this is how we do it!
+            console.log('Before populate:', post);
+            post = await post.populate('user', 'name email');
+            console.log('Before populate:', post);
+             return res.status(200).json({
                 data: {
                     post: post
                 },
@@ -74,12 +22,13 @@ module.exports.create = async function(req, res){
             });
         }
 
-
         req.flash('success', 'Post published!');
-        return res.redirect('back');
+        return;
 
     }catch(err){
         req.flash('error', err);
+        // added this to view the error on console as well
+        console.log(err);
         return res.redirect('back');
     }
   
@@ -92,9 +41,23 @@ module.exports.destroy = async function(req, res){
         let post = await Post.findById(req.params.id);
 
         if (post.user == req.user.id){
-            post.deleteOne({_id: req.params.id});
+
+            // CHANGE :: delete the associated likes for the post and all its comments' likes too
+            await Like.deleteMany({likeable: post, onModel: 'Post'});
+            await Like.deleteMany({_id: {$in: post.comments}});
+            post.deleteOne();
 
             await Comment.deleteMany({post: req.params.id});
+
+
+            if (req.xhr){
+                return res.status(200).json({
+                    data: {
+                        post_id: req.params.id
+                    },
+                    message: "Post deleted"
+                });
+            }
 
             req.flash('success', 'Post and associated comments deleted!');
 

@@ -7,17 +7,27 @@ const User = require('../models/users'); // Importing the User model
 
 // authentication using passport
 passport.use(new LocalStrategy({
-        usernameField: 'email' // Using email as the username field
+        usernameField: 'email', // Using email as the username field
+        passReqToCallback: true
     },
-    async function(email, password, done){
+    async function(req,email, password, done){
         try {
             // find a user and establish the identity
-            let user = await User.findOne({email: email});
+            const user = await User.findOne({email: email});
+            if(!user){
+                req.flash('error', 'User Not Found!!');
+                return done(null, false);
+            }
 
-            if (!user || user.password !== password){
-                req.flash('error', 'Invalid Username/Password');
+            if(user.password !== password){
+                req.flash('error','Invalid Username/Password');
                 return done(null, false); // No user or incorrect password
             }
+
+            // if (!user || user.password !== password){
+            //     req.flash('error', 'Invalid Username/Password');
+            //     return done(null, false); // No user or incorrect password
+            // }
 
             return done(null, user); // Authentication successful
         } catch (err) {
