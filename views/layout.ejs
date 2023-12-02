@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <%- style %>
+  </head>
+  <body>
+    <%- include('__header') %>
+    <main>
+      <%- body %>
+    </main>
+    <%- include('__footer') %>
+    <%- script %>
+  </body>
+</html>
