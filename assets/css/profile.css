@@ -1,0 +1,43 @@
+/* profile.css */
+
+/* Add styles for the User Profile view here */
+#profile-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: 50px;
+    border: 1px solid #93b9b8;
+}
+
+#profile-page a {
+    color: #596d59;
+    text-decoration: none;
+    margin-top: 10px;
+  
+}
+
+#profile-page a:hover {
+    text-decoration: underline;
+}
+
+#profile-page h1 {
+    color: #1ab01c;
+    margin: 10px 0;
+}
+
+#profile-page p {
+    margin: 5px 0;
+}
+
+.logout-btn {
+    background-color: #d1e5e1;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    margin-top: 20px;
+    display: inline-block;
+}

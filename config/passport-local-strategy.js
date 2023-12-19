@@ -18,6 +18,7 @@ passport.use(new LocalStrategy({
             }
 
             if(user.password !== password){
+                req.flash('error', 'Incorrect Password!');
                 return done(null, false); // No user or incorrect password
             }
 
@@ -31,7 +32,7 @@ passport.use(new LocalStrategy({
 
 // serializing the user to decide which key is to be kept in the cookies
 passport.serializeUser(function(user, done){
-    console.log("serialization is working");
+    // console.log("serialization is working");
     done(null, user.id); // Storing user ID in the session
 });
 
@@ -40,9 +41,8 @@ passport.serializeUser(function(user, done){
 // deserializing the user from the key in the cookies
 passport.deserializeUser(async function(id, done){
     try {
-        console.log("de-serialization is working");
+        // console.log("de-serialization is working");
         let user = await User.findOne({ _id: id });
-        console.log("de-serialization is working");
         return done(null, user);
     } catch(err) {
         console.log('Error in finding user --> Passport', err);
@@ -57,7 +57,6 @@ passport.checkAuthentication = function(req, res, next){
     if (req.isAuthenticated()){
         return next();
     }
-
     // if the user is not signed in
     return res.redirect('/users/sign-in');
 }

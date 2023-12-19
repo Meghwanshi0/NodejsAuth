@@ -1,5 +1,9 @@
-<h1>USER PROFILE</h1>
+<link rel="stylesheet" href="../assets/css/profile.css">
+<div id="profile-page">
+    <a href="/">HOME</a>
 
-<p>Name : <%= user.name %></p>
+    <h1>Name: <%= user.name %></h1>
+    <p>Email: <%= user.email %></p>
 
-<p>Email : <%= user.email %></p>
+    <a href="/users/sign-out" class="logout-btn">Logout</a>
+</div>
